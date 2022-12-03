@@ -1,16 +1,41 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import classes from "./HeaderCartButton.module.css";
 import CardContext from "../../context/cart-context";
 
 const HeaderCartButton = (props) => {
+  const [btnAction, setBtnAction] = useState(false);
   const cartCtx = useContext(CardContext);
 
   const numberOfCartItem = cartCtx.items.reduce((acc, item) => {
     return acc + item.amount;
   }, 0);
 
+  ////// Bumb for the button when we add items to cart /////
+  const btnClasses = `${classes.button} ${btnAction && classes.bump}`;
+
+  // used in useEffect => So use effect only runs when items change (and not the whole cartCtx)
+  const { items } = cartCtx;
+
+  useEffect(() => {
+    // So it won't run when the page loads
+    if (items.length === 0) return;
+
+    // add the "bump" class
+    setBtnAction(true);
+
+    // remove the "bump" class after 300ms so it can happen again
+    const timer = setTimeout(() => {
+      setBtnAction(false);
+    }, 300);
+
+    // CleanUp function => So if we Rapidly click on add item, it will only bumb once
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [items]);
+
   return (
-    <button className={classes.button} onClick={props.onShowCart2}>
+    <button className={btnClasses} onClick={props.onShowCart2}>
       <span className={classes.icon}>
         {" "}
         <svg
