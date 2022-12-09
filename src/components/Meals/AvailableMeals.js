@@ -1,36 +1,41 @@
 import classes from "./AvailableMeals.module.css";
 import Card from "../UI/Card.js";
 import MealItem from "./MealItem/MealItem";
-
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
+import { useCallback, useEffect, useState } from "react";
 
 const AvailableMeals = () => {
-  const mealsList = DUMMY_MEALS.map((meal) => {
+  const [curMeals, setMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchMealsHandler = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await fetch(
+        "https://food-project-c03a0-default-rtdb.europe-west1.firebasedatabase.app/Meals.json"
+      );
+      if (!response.ok) throw new Error("Something went wrong!");
+
+      const data = await response.json();
+      const meals = Object.values(data).map((meal) => {
+        return {
+          name: meal.name,
+          description: meal.description,
+          price: meal.price,
+        };
+      });
+      setMeals(meals);
+    } catch (error) {
+      setError(error);
+    }
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    fetchMealsHandler();
+  }, [fetchMealsHandler]);
+  const mealsList = curMeals.map((meal) => {
     return (
       <MealItem
         key={meal.id}
@@ -42,11 +47,20 @@ const AvailableMeals = () => {
     );
   });
 
+  let content;
+  if (isLoading) {
+    content = <p>Loading...</p>;
+  }
+  if (!error && !isLoading) {
+    content = <ul>{mealsList}</ul>;
+  }
+  if (error && !isLoading) {
+    content = <p>Something Went wrong</p>;
+  }
+
   return (
     <section className={classes.meals}>
-      <Card>
-        <ul>{mealsList}</ul>
-      </Card>
+      <Card>{content}</Card>
     </section>
   );
 };
