@@ -10,6 +10,7 @@ import CartProvider from "./context/CartProvider";
 // cart position doesnt matter becouse we use portals on it
 function App() {
   const [cartIsShown, setCartIsShown] = useState(false);
+  const [checkoutIsShown, setCheckoutIsShown] = useState(false);
 
   function showCartHandler() {
     setCartIsShown(true);
