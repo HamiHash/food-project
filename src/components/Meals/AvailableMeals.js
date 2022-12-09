@@ -38,8 +38,8 @@ const AvailableMeals = () => {
   const mealsList = curMeals.map((meal) => {
     return (
       <MealItem
-        key={meal.id}
-        id={meal.id}
+        key={Math.random().toFixed(5)}
+        id={Math.random().toFixed(5)}
         name={meal.name}
         description={meal.description}
         price={meal.price}
