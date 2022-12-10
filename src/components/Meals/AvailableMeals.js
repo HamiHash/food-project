@@ -26,15 +26,16 @@ const AvailableMeals = () => {
         };
       });
       setMeals(meals);
+      setIsLoading(false);
     } catch (error) {
       setError(error);
     }
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
     fetchMealsHandler();
   }, [fetchMealsHandler]);
+
   const mealsList = curMeals.map((meal) => {
     return (
       <MealItem
@@ -51,10 +52,10 @@ const AvailableMeals = () => {
   if (isLoading) {
     content = <p>Loading...</p>;
   }
-  if (!error && !isLoading) {
+  if (!error) {
     content = <ul>{mealsList}</ul>;
   }
-  if (error && !isLoading) {
+  if (error) {
     content = <p>Something Went wrong</p>;
   }
 
